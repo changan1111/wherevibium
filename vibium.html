@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Testing Wars — 14 Rounds That Changed Everything</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --selenium:#ff4d2e; --playwright:#2e9eff; --mcp:#b06aff; --vibium:#00e5a0;
+  --danger:#ff4d2e; --warning:#ffb830; --bg:#080a0e; --surface:#0f1218;
+  --surface2:#161c26; --border:#1e2535; --text:#dde3f0; --muted:#556080; --gold:#f5c842;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Crimson Pro',Georgia,serif;font-size:17px;line-height:1.7;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(30,37,53,0.4) 1px,transparent 1px),linear-gradient(90deg,rgba(30,37,53,0.4) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:0 24px 100px;}
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:80px 0 60px;}
+.hero-eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:24px;display:flex;align-items:center;gap:12px;}
+.hero-eyebrow::after{content:'';flex:1;max-width:120px;height:1px;background:linear-gradient(to right,var(--gold),transparent);}
+.hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(3.5rem,10vw,7rem);line-height:0.95;letter-spacing:2px;margin-bottom:32px;}
+.hero h1 .line1{color:var(--text);display:block;}
+.hero h1 .line2{display:block;background:linear-gradient(135deg,var(--vibium),var(--playwright));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero h1 .line3{color:var(--muted);display:block;font-size:0.6em;}
+.hero-sub{font-size:1.15rem;color:var(--muted);font-style:italic;max-width:520px;margin-bottom:48px;line-height:1.7;}
+.journey{display:flex;flex-direction:column;gap:0;margin-bottom:80px;position:relative;}
+.journey::before{content:'';position:absolute;left:28px;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,var(--vibium),var(--playwright),var(--mcp),var(--playwright),var(--vibium),var(--muted));}
+.jstep{display:flex;gap:24px;align-items:flex-start;padding:4px 0;}
+.jdot{width:16px;height:16px;border-radius:50%;border:2px solid;flex-shrink:0;margin-top:4px;position:relative;z-index:1;margin-left:21px;background:var(--bg);}
+.jdot.v{border-color:var(--vibium);box-shadow:0 0 8px var(--vibium);}
+.jdot.p{border-color:var(--playwright);box-shadow:0 0 8px var(--playwright);}
+.jdot.m{border-color:var(--mcp);box-shadow:0 0 8px var(--mcp);}
+.jdot.d{border-color:var(--danger);}
+.jdot.w{border-color:var(--warning);}
+.jtext{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);padding:2px 0 12px;}
+.jtext .up{color:var(--vibium);}
+.jtext .down{color:var(--danger);}
+.jtext .tool{font-weight:600;}
+.jtext .tool.v{color:var(--vibium);}
+.jtext .tool.p{color:var(--playwright);}
+.jtext .tool.m{color:var(--mcp);}
+.sdiv{display:flex;align-items:center;gap:20px;margin:72px 0 40px;}
+.sdiv-num{font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1;opacity:0.15;flex-shrink:0;}
+.sdiv-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;}
+.sdiv-line{flex:1;height:1px;background:var(--border);}
+.sdiv.v .sdiv-num,.sdiv.v .sdiv-label{color:var(--vibium);}
+.sdiv.p .sdiv-num,.sdiv.p .sdiv-label{color:var(--playwright);}
+.sdiv.m .sdiv-num,.sdiv.m .sdiv-label{color:var(--mcp);}
+.sdiv.w .sdiv-num,.sdiv.w .sdiv-label{color:var(--warning);}
+.sdiv.d .sdiv-num,.sdiv.d .sdiv-label{color:var(--danger);}
+.sdiv.g .sdiv-num,.sdiv.g .sdiv-label{color:var(--gold);}
+.round{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:20px;transition:transform 0.2s;}
+.round:hover{transform:translateY(-2px);}
+.round-header{padding:20px 28px 16px;display:flex;align-items:center;gap:16px;border-bottom:1px solid var(--border);}
+.round-num{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;line-height:1;opacity:0.3;flex-shrink:0;}
+.round-title{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:1px;flex:1;}
+.round-badge{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:4px 10px;border-radius:4px;border:1px solid;flex-shrink:0;}
+.round.v .round-num,.round.v .round-title{color:var(--vibium);}
+.round.v .round-badge{color:var(--vibium);border-color:rgba(0,229,160,0.3);background:rgba(0,229,160,0.08);}
+.round.p .round-num,.round.p .round-title{color:var(--playwright);}
+.round.p .round-badge{color:var(--playwright);border-color:rgba(46,158,255,0.3);background:rgba(46,158,255,0.08);}
+.round.m .round-num,.round.m .round-title{color:var(--mcp);}
+.round.m .round-badge{color:var(--mcp);border-color:rgba(176,106,255,0.3);background:rgba(176,106,255,0.08);}
+.round.w .round-num,.round.w .round-title{color:var(--warning);}
+.round.w .round-badge{color:var(--warning);border-color:rgba(255,184,48,0.3);background:rgba(255,184,48,0.08);}
+.round.d .round-num,.round.d .round-title{color:var(--danger);}
+.round.d .round-badge{color:var(--danger);border-color:rgba(255,77,46,0.3);background:rgba(255,77,46,0.08);}
+.round-body{padding:24px 28px;}
+.round-story{font-size:1.05rem;color:var(--text);margin-bottom:20px;line-height:1.75;}
+.round-story strong{font-weight:600;}
+.codeblock{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:18px 20px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.8;color:#8899bb;margin:16px 0;overflow-x:auto;}
+.codeblock .good{color:var(--vibium);}
+.codeblock .bad{color:var(--danger);}
+.codeblock .warn{color:var(--warning);}
+.codeblock .blue{color:var(--playwright);}
+.codeblock .purple{color:var(--mcp);}
+.codeblock .gold{color:var(--gold);}
+.codeblock .dim{color:var(--muted);opacity:0.6;}
+.codeblock .bold{font-weight:600;color:var(--text);}
+.verdict{border-radius:10px;padding:16px 20px;margin-top:20px;font-style:italic;font-size:1rem;line-height:1.6;border-left:3px solid;position:relative;}
+.verdict::before{content:'VERDICT';font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:3px;position:absolute;top:-8px;left:16px;padding:0 8px;}
+.round.v .verdict{background:rgba(0,229,160,0.05);border-color:var(--vibium);color:var(--vibium);}
+.round.v .verdict::before{background:var(--surface);color:var(--vibium);}
+.round.p .verdict{background:rgba(46,158,255,0.05);border-color:var(--playwright);color:var(--playwright);}
+.round.p .verdict::before{background:var(--surface);color:var(--playwright);}
+.round.m .verdict{background:rgba(176,106,255,0.05);border-color:var(--mcp);color:var(--mcp);}
+.round.m .verdict::before{background:var(--surface);color:var(--mcp);}
+.round.w .verdict{background:rgba(255,184,48,0.05);border-color:var(--warning);color:var(--warning);}
+.round.w .verdict::before{background:var(--surface);color:var(--warning);}
+.round.d .verdict{background:rgba(255,77,46,0.05);border-color:var(--danger);color:var(--danger);}
+.round.d .verdict::before{background:var(--surface);color:var(--danger);}
+.twist{background:linear-gradient(135deg,rgba(255,184,48,0.08),rgba(255,77,46,0.08));border:1px solid rgba(255,184,48,0.2);border-radius:10px;padding:14px 20px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;color:var(--warning);margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.twist::before{content:'⚡ TWIST';font-weight:600;font-size:10px;letter-spacing:3px;}
+.score-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--border);margin:40px 0;}
+table{width:100%;border-collapse:collapse;font-size:0.875rem;}
+thead tr{background:var(--surface2);}
+th{padding:14px 16px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;border-bottom:1px solid var(--border);white-space:nowrap;color:var(--muted);}
+td{padding:13px 16px;border-bottom:1px solid rgba(30,37,53,0.6);vertical-align:middle;font-size:0.9rem;color:var(--muted);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(22,28,38,0.8);}
+td:first-child{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text);font-weight:600;white-space:nowrap;}
+td:nth-child(2){font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:1px;}
+.tw-v{color:var(--vibium);}.tw-p{color:var(--playwright);}.tw-m{color:var(--mcp);}
+.tw-w{color:var(--warning);}.tw-d{color:var(--danger);}.tw-all{color:var(--muted);}
+.final-story{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:48px 40px;margin:60px 0;position:relative;overflow:hidden;}
+.final-story::before{content:'THE STORY';font-family:'Bebas Neue',sans-serif;font-size:8rem;position:absolute;top:-20px;right:-10px;color:rgba(255,255,255,0.015);letter-spacing:4px;pointer-events:none;}
+.final-story h2{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:2px;color:var(--gold);margin-bottom:24px;}
+.final-story p{font-size:1.1rem;line-height:1.9;color:#99aac0;font-style:italic;}
+.final-story p strong{color:var(--text);font-style:normal;font-weight:600;}
+.closing{text-align:center;padding:60px 20px;border-top:1px solid var(--border);margin-top:80px;}
+.closing h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,6vw,4rem);letter-spacing:3px;background:linear-gradient(135deg,var(--vibium),var(--playwright),var(--mcp));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:20px;}
+.closing p{color:var(--muted);font-style:italic;font-size:1rem;max-width:500px;margin:0 auto 40px;line-height:1.7;}
+.closing-pills{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;}
+.cpill{font-family:'JetBrains Mono',monospace;font-size:11px;padding:8px 18px;border-radius:100px;border:1px solid;letter-spacing:1px;}
+.cpill.v{color:var(--vibium);border-color:rgba(0,229,160,0.3);}
+.cpill.p{color:var(--playwright);border-color:rgba(46,158,255,0.3);}
+.cpill.m{color:var(--mcp);border-color:rgba(176,106,255,0.3);}
+.cpill.s{color:var(--danger);border-color:rgba(255,77,46,0.3);}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+.hero{animation:fadeUp 0.8s ease both;}
+.round{animation:fadeUp 0.5s ease both;}
+@media(max-width:600px){.round-header{flex-wrap:wrap;}.final-story{padding:32px 24px;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">Test Automation · The Real Story · 2026</div>
+  <h1>
+    <span class="line1">THE TESTING</span>
+    <span class="line2">WARS</span>
+    <span class="line3">14 Rounds. Every Twist. No Mercy.</span>
+  </h1>
+  <p class="hero-sub">How Vibium walked in looking unbeatable, got knocked down, recovered, got knocked down again — and why the final answer is more complicated than anyone expected.</p>
+
+  <div class="journey">
+    <div class="jstep"><div class="jdot v"></div><div class="jtext"><span class="tool v">VIBIUM</span> enters → <span class="up">🚀 Looks unbeatable</span></div></div>
+    <div class="jstep"><div class="jdot d"></div><div class="jtext">Token cost hits → <span class="down">📉 First setback</span></div></div>
+    <div class="jstep"><div class="jdot v"></div><div class="jtext">Caching saves it → <span class="up">📈 Recovers</span></div></div>
+    <div class="jstep"><div class="jdot d"></div><div class="jtext">Non-determinism exposed → <span class="down">📉 Trust broken</span></div></div>
+    <div class="jstep"><div class="jdot m"></div><div class="jtext"><span class="tool m">MCP</span> rises → <span class="up">🚀 New contender</span></div></div>
+    <div class="jstep"><div class="jdot m"></div><div class="jtext">Token advantage revealed → <span class="up">📈 MCP stronger</span></div></div>
+    <div class="jstep"><div class="jdot d"></div><div class="jtext">MCP hallucination at handover → <span class="down">📉 Blind spot exposed</span></div></div>
+    <div class="jstep"><div class="jdot d"></div><div class="jtext">Generated code is brittle → <span class="down">📉 MCP hit again</span></div></div>
+    <div class="jstep"><div class="jdot p"></div><div class="jtext"><span class="tool p">PLAYWRIGHT</span> steps forward → <span class="up">🚀 Reliable veteran</span></div></div>
+    <div class="jstep"><div class="jdot d"></div><div class="jtext">UI changes break it too → <span class="down">📉 Weakness exposed</span></div></div>
+    <div class="jstep"><div class="jdot m"></div><div class="jtext"><span class="tool m">MCP</span> returns → regenerate + run free → <span class="up">📈 Sweet spot</span></div></div>
+    <div class="jstep"><div class="jdot v"></div><div class="jtext">Local LLM + Jason's vision → <span class="up">🚀 Vibium reclaims future</span></div></div>
+    <div class="jstep"><div class="jdot d"></div><div class="jtext">Human consequence → <span class="down">😰 60-70% testers in trouble</span></div></div>
+  </div>
+</div>
+
+
+<!-- ROUND 01 -->
+<div class="sdiv v"><div class="sdiv-num">01</div><div class="sdiv-label">Round 1</div><div class="sdiv-line"></div></div>
+<div class="round v">
+  <div class="round-header">
+    <div class="round-num">01</div>
+    <div class="round-title">Vibium Enters. Looks Unbeatable.</div>
+    <div class="round-badge">🟢 VIBIUM LEADS</div>
+  </div>
+  <div class="round-body">
+    <div class="round-story">Vibium walks in with something nobody has seen before. Plain English tests. No selectors to write. No code to maintain. Self-healing when UI changes. And anyone — not just developers — can write the tests.</div>
+    <div class="codeblock">
+<span class="dim">// The entire test. Nothing more needed.</span>
+<span class="good">await vibe.do("login with test credentials")</span>
+<span class="good">await vibe.do("submit transaction of 5000")</span>
+<span class="good">await vibe.do("verify success message appears")</span>
+
+<span class="dim">// UI button renamed? → Self heals ✅</span>
+<span class="dim">// Layout changed?    → Self heals ✅</span>
+<span class="dim">// No Page Object Model. No XPath. No waiting. ✅</span>
+    </div>
+    <div class="round-story">No brittle locators. No Page Object Model. Just intent — described in plain English — executed by AI. The room goes quiet. Nobody has a counter argument yet.</div>
+    <div class="verdict">"Why are we still writing Playwright scripts? This changes everything."</div>
+  </div>
+</div>
+
+
+<!-- ROUND 02 -->
+<div class="sdiv d"><div class="sdiv-num">02</div><div class="sdiv-label">Round 2 · First Twist</div><div class="sdiv-line"></div></div>
+<div class="round d">
+  <div class="round-header">
+    <div class="round-num">02</div>
+    <div class="round-title">Token Cost Hits. First Setback.</div>
+    <div class="round-badge">🔴 VIBIUM STUMBLES</div>
+  </div>
+  <div class="round-body">
+    <div class="twist">Every plain English step makes a live API call to the LLM. Every. Single. Time.</div>
+    <div class="round-story">The problem surfaces when someone asks: <em>"What does this cost at scale?"</em> Every <code>vibe.do()</code> is not just a function call — it's a paid API request to an LLM cloud. And in enterprise regression suites, that adds up devastatingly fast.</div>
+    <div class="codeblock">
+<span class="bold">1 test case  (10 steps)</span>  = <span class="bad">10 API calls    ~1,000 tokens</span>
+<span class="bold">50 test cases           </span>  = <span class="bad">500 API calls   ~50,000 tokens</span>
+<span class="bold">500 regression tests    </span>  = <span class="bad">5,000 API calls ~500,000 tokens</span>
+<span class="bold">Daily CI/CD pipeline    </span>  = <span class="bad">multiply again   💸 never stops</span>
+
+<span class="good">Playwright cost for same suite = $0.00 forever</span>
+    </div>
+    <div class="verdict">"Playwright is free forever. Vibium never stops billing. This will bankrupt our test budget at scale."</div>
+  </div>
+</div>
+
+
+<!-- ROUND 03 -->
+<div class="sdiv v"><div class="sdiv-num">03</div><div class="sdiv-label">Round 3</div><div class="sdiv-line"></div></div>
+<div class="round v">
+  <div class="round-header">
+    <div class="round-num">03</div>
+    <div class="round-title">Caching Saves It. Vibium Recovers.</div>
+    <div class="round-badge">🟢 VIBIUM RECOVERS</div>
+  </div>
+  <div class="round-body">
+    <div class="round-story">But Vibium fights back. LLM prompt caching exists — and it changes the cost equation significantly. When the same page context is sent again, the LLM recognises it from cache and responds faster and cheaper.</div>
+    <div class="codeblock">
+<span class="bad">Without caching: Every run → Full token cost every time</span>
+
+<span class="good">With LLM prompt caching (Claude / GPT-4o):</span>
+<span class="good">Run 1  → Full analysis → LLM caches the page context</span>
+<span class="good">Run 2  → Cache hit    → 80% cheaper tokens</span>
+<span class="good">Run 3+ → Cache hit    → Near negligible cost</span>
+
+<span class="warn">Cache miss only when: UI changes or new page encountered</span>
+    </div>
+    <div class="round-story">For stable UIs — the cost concern is largely solved after the first run. The token exhaustion argument weakens. Vibium is back in the conversation.</div>
+    <div class="verdict">"Caching changes everything. First run expensive — nth run almost free. Cost manageable for stable applications."</div>
+  </div>
+</div>
+
+
+<!-- ROUND 04 -->
+<div class="sdiv d"><div class="sdiv-num">04</div><div class="sdiv-label">Round 4 · Deadly Twist</div><div class="sdiv-line"></div></div>
+<div class="round d">
+  <div class="round-header">
+    <div class="round-num">04</div>
+    <div class="round-title">Non-Determinism. Trust Broken.</div>
+    <div class="round-badge">🔴 SERIOUS HIT</div>
+  </div>
+  <div class="round-body">
+    <div class="twist">Same test. Same app. Different result. And nobody knows why.</div>
+    <div class="round-story">Vibium uses AI to decide how to execute each step. AI is not deterministic. It can take a slightly different path each time — and sometimes that path leads to a wrong result with no explanation, no trace, no audit log.</div>
+    <div class="codeblock">
+<span class="dim">// Same test. Same application. Three runs.</span>
+<span class="good">Run  1  → Pass ✅  (AI took path A)</span>
+<span class="good">Run  2  → Pass ✅  (AI took path A)</span>
+<span class="bad">Run 47  → Fail ❌  (AI took path B — why??)</span>
+<span class="good">Run 48  → Pass ✅  (AI took path A again)</span>
+
+<span class="warn">Which field did AI misidentify on run 47?</span>
+<span class="warn">Which step did it interpret differently?</span>
+<span class="bad">Nobody knows. No trace. No audit. Pure black box.</span>
+    </div>
+    <div class="round-story">In regulated industries — banking, insurance, healthcare — this is not acceptable. You cannot present a black-box AI decision to an RBI auditor. <strong>No map to verify. No step-by-step to audit. Hard to find where it went wrong.</strong></div>
+    <div class="verdict">"I cannot trust what I cannot explain. I cannot audit what I cannot reproduce. This is a dealbreaker for compliance."</div>
+  </div>
+</div>
+
+
+<!-- ROUND 05 -->
+<div class="sdiv m"><div class="sdiv-num">05</div><div class="sdiv-label">Round 5</div><div class="sdiv-line"></div></div>
+<div class="round m">
+  <div class="round-header">
+    <div class="round-num">05</div>
+    <div class="round-title">MCP Rises From The Shadows.</div>
+    <div class="round-badge">🟣 MCP ENTERS</div>
+  </div>
+  <div class="round-body">
+    <div class="round-story">While Vibium struggles with trust, Playwright + MCP steps forward: <em>"What if you could write plain English — but get deterministic, auditable Playwright code as output?"</em> That's exactly what MCP delivers.</div>
+    <div class="codeblock">
+<span class="dim">// You say this in plain English to Claude / Copilot:</span>
+<span class="purple">"Write a test for the login and transaction flow"</span>
+
+<span class="dim">// MCP generates real, readable Playwright code:</span>
+<span class="blue">await page.fill('#username', 'testuser')</span>
+<span class="blue">await page.click('#login-btn')</span>
+<span class="blue">await page.fill('#amount', '5000')</span>
+<span class="blue">await page.click('#submit')</span>
+<span class="blue">await expect(page.locator('.success')).toBeVisible()</span>
+
+<span class="good">→ Readable ✅  Auditable ✅  Deterministic ✅</span>
+<span class="good">→ Same path every run ✅  Trace viewer works ✅</span>
+    </div>
+    <div class="round-story">Plain English writing experience. Real, trustworthy Playwright code as output. Not a black box. Not an AI decision at runtime.</div>
+    <div class="verdict">"Same English experience as Vibium — but I get code I can trust, audit, and debug. Why use Vibium at all?"</div>
+  </div>
+</div>
+
+
+<!-- ROUND 06 -->
+<div class="sdiv m"><div class="sdiv-num">06</div><div class="sdiv-label">Round 6</div><div class="sdiv-line"></div></div>
+<div class="round m">
+  <div class="round-header">
+    <div class="round-num">06</div>
+    <div class="round-title">MCP Token Advantage Revealed.</div>
+    <div class="round-badge">🟣 MCP STRONGER</div>
+  </div>
+  <div class="round-body">
+    <div class="round-story">Then comes the token cost comparison — and MCP's architectural advantage is decisive. The two tools consume tokens in fundamentally different ways.</div>
+    <div class="codeblock">
+<span class="bad">VIBIUM — LLM called every run, every step, forever:</span>
+<span class="bad">vibe.do("login")  → token 🪙 Run 1</span>
+<span class="bad">vibe.do("login")  → token 🪙 Run 100</span>
+<span class="bad">vibe.do("login")  → token 🪙 Run 1000</span>
+<span class="dim">LLM never stops. Meter always running.</span>
+
+<span class="good">MCP — LLM called ONCE to generate code:</span>
+<span class="purple">"Write login test" → token 🪙 (once, ever)</span>
+<span class="good">Code runs          → FREE ✅ Run 1</span>
+<span class="good">Code runs          → FREE ✅ Run 100</span>
+<span class="good">Code runs          → FREE ✅ Run 1000</span>
+<span class="dim">LLM job done. Code is an owned asset now.</span>
+    </div>
+    <div class="round-story">MCP converts your English into <strong>code you own</strong> — an asset that runs free forever. Vibium <strong>rents the LLM</strong> for every execution. You never own anything.</div>
+    <div class="verdict">"MCP converts English into an asset. Vibium rents the LLM forever. At 1000 CI/CD runs a month — the cost gap is enormous."</div>
+  </div>
+</div>
+
+
+<!-- ROUND 07 — NEW: MCP HALLUCINATION HANDOVER -->
+<div class="sdiv d"><div class="sdiv-num">07</div><div class="sdiv-label">Round 7 · Hidden Twist</div><div class="sdiv-line"></div></div>
+<div class="round d">
+  <div class="round-header">
+    <div class="round-num">07</div>
+    <div class="round-title">MCP Hallucination At Handover. Blind Spot Exposed.</div>
+    <div class="round-badge">🔴 MCP BLIND SPOT</div>
+  </div>
+  <div class="round-body">
+    <div class="twist">MCP generates code confidently. Playwright executes blindly. Nobody checks if the code is actually correct.</div>
+    <div class="round-story">MCP looked perfect — until someone asks the right question. MCP is an AI. AI hallucinates. When MCP generates Playwright code, it can confidently write selectors for elements that simply do not exist on your page. And Playwright? It just executes whatever it is handed. No intelligence. No verification. No pushback.</div>
+    <div class="codeblock">
+<span class="dim">// MCP generates this with full confidence:</span>
+<span class="purple">await page.click('#confirm-payment-btn')</span>
+<span class="purple">await page.fill('#transaction-ref-input', refNo)</span>
+<span class="purple">await page.locator('.payment-success-banner')</span>
+
+<span class="warn">But on your actual page:</span>
+<span class="bad">#confirm-payment-btn   → does not exist ❌</span>
+<span class="bad">#transaction-ref-input → field is actually a div ❌</span>
+<span class="bad">.payment-success-banner → class name is different ❌</span>
+
+<span class="dim">// Playwright runs it:</span>
+<span class="bad">Error: Element not found → cryptic failure</span>
+<span class="warn">Is it MCP's fault? Playwright's fault?</span>
+<span class="bad">Two layers. Impossible to tell. Debugging nightmare.</span>
+    </div>
+    <div class="round-story">The handover between MCP (AI brain) and Playwright (blind executor) is the weak point nobody talks about. <strong>MCP generates. Playwright executes. Nobody validates the handover is clean.</strong>
+    <br><br>
+    With pure Playwright — you wrote the selector yourself. You know it exists. You verified it. With MCP — you trusted the AI, and the AI confidently invented something that doesn't exist. The failure message from Playwright gives you no clue that MCP was the problem.</div>
+    <div class="codeblock">
+<span class="dim">// Vibium comparison for the same scenario:</span>
+<span class="good">await vibe.do("click confirm payment button")</span>
+<span class="dim">→ AI looks at ACTUAL screen</span>
+<span class="dim">→ Finds what actually exists</span>
+<span class="dim">→ Clicks the real element</span>
+<span class="good">→ Cannot hallucinate — it sees before it acts ✅</span>
+
+<span class="bad">MCP: generates from memory → may hallucinate</span>
+<span class="good">Vibium: reads screen live → sees reality always</span>
+    </div>
+    <div class="verdict">"MCP hallucinates selectors confidently. Playwright executes blindly. The handover is the hidden failure point nobody warned you about."</div>
+  </div>
+</div>
+
+
+<!-- ROUND 08 -->
+<div class="sdiv d"><div class="sdiv-num">08</div><div class="sdiv-label">Round 8 · Third Twist</div><div class="sdiv-line"></div></div>
+<div class="round d">
+  <div class="round-header">
+    <div class="round-num">08</div>
+    <div class="round-title">Generated Code Is Also Fragile.</div>
+    <div class="round-badge">🔴 MCP HIT AGAIN</div>
+  </div>
+  <div class="round-body">
+    <div class="twist">Even when MCP generates correctly — the code has hardcoded selectors. Selectors break when UI changes.</div>
+    <div class="round-story">Even if hallucination is solved, a second problem remains. MCP generates real Playwright code with real brittle selectors. UI changes break that code. You call MCP again. It generates new code. UI changes again. Breaks again. The cycle never ends.</div>
+    <div class="codeblock">
+<span class="dim">// MCP generates this. Works today.</span>
+<span class="blue">await page.click('#submit-btn')</span>
+<span class="blue">await page.fill('#account-input', value)</span>
+
+<span class="warn">Developer renames: #submit-btn → #pay-now-btn</span>
+<span class="bad">Generated code breaks ❌</span>
+<span class="warn">Call MCP → regenerate → UI changes → breaks → regenerate</span>
+
+<span class="dim">You traded:</span>
+<span class="bad">Vibium: LLM tokens every run</span>
+<span class="warn">MCP:    Selector breaks every UI change + hallucination risk</span>
+<span class="dim">Different problem. Still a problem.</span>
+    </div>
+    <div class="verdict">"We moved the pain from 'tokens every run' to 'breaks every UI change plus hallucination risk'. Progress — but not solved."</div>
+  </div>
+</div>
+
+
+<!-- ROUND 09 -->
+<div class="sdiv p"><div class="sdiv-num">09</div><div class="sdiv-label">Round 9</div><div class="sdiv-line"></div></div>
+<div class="round p">
+  <div class="round-header">
+    <div class="round-num">09</div>
+    <div class="round-title">Playwright Steps Forward. Pure And Free.</div>
+    <div class="round-badge">🔵 PLAYWRIGHT RISES</div>
+  </div>
+  <div class="round-body">
+    <div class="round-story">When every AI option has a catch — Playwright stands quietly in the corner and raises its hand. No LLM. No hallucination. No tokens. No internet. No black box. Just code that runs.</div>
+    <div class="codeblock">
+<span class="blue">Playwright — the boring, reliable veteran:</span>
+<span class="good">→ No LLM cost              $0.00 forever ✅</span>
+<span class="good">→ No hallucination         you wrote the selector ✅</span>
+<span class="good">→ No internet needed       works behind any firewall ✅</span>
+<span class="good">→ Fully deterministic      same path every run ✅</span>
+<span class="good">→ Full trace viewer        every step auditable ✅</span>
+<span class="good">→ Battle tested 5+ years   proven in production ✅</span>
+<span class="good">→ Enterprise compliance    RBI / HIPAA ready ✅</span>
+    </div>
+    <div class="round-story">When Vibium has non-determinism and MCP has hallucination plus brittle selectors — pure Playwright has none of these problems. The boring choice starts looking like the smart choice.</div>
+    <div class="verdict">"No tokens. No hallucination. No black box. No internet. Maybe the boring choice is the right choice after all."</div>
+  </div>
+</div>
+
+
+<!-- ROUND 10 -->
+<div class="sdiv d"><div class="sdiv-num">10</div><div class="sdiv-label">Round 10 · Fourth Twist</div><div class="sdiv-line"></div></div>
+<div class="round d">
+  <div class="round-header">
+    <div class="round-num">10</div>
+    <div class="round-title">UI Changes Break Playwright Too.</div>
+    <div class="round-badge">🔴 PLAYWRIGHT EXPOSED</div>
+  </div>
+  <div class="round-body">
+    <div class="twist">In a vibe-coded world, AI rebuilds UI daily. Playwright tests break constantly. Maintenance never ends.</div>
+    <div class="round-story">Playwright is perfect — in a stable world. But AI tools like Lovable, Cursor, and v0 rebuild UIs overnight. Every change breaks a Playwright test. The automation engineer spends the whole week fixing selectors — never writing new tests.</div>
+    <div class="codeblock">
+<span class="warn">Monday   → AI rebuilds login UI  → 3 tests break</span>
+<span class="warn">Tuesday  → AI adds new form       → 5 tests break</span>
+<span class="warn">Wednesday → Button renamed        → 2 tests break</span>
+<span class="warn">Thursday → Layout restructured   → 4 tests break</span>
+
+<span class="bad">Automation engineer: fixes selectors all week.</span>
+<span class="bad">Never writes new tests. Only repairs old ones. Forever.</span>
+
+<span class="good">Playwright: Free to RUN ✅</span>
+<span class="bad">Playwright: Expensive to MAINTAIN in fast-moving products ❌</span>
+    </div>
+    <div class="verdict">"Playwright is free to run but expensive to maintain. In an AI-built world where UI changes daily — the maintenance cost never ends."</div>
+  </div>
+</div>
+
+
+<!-- ROUND 11 -->
+<div class="sdiv m"><div class="sdiv-num">11</div><div class="sdiv-label">Round 11</div><div class="sdiv-line"></div></div>
+<div class="round m">
+  <div class="round-header">
+    <div class="round-num">11</div>
+    <div class="round-title">MCP Returns. The Sweet Spot.</div>
+    <div class="round-badge">🟣 MCP BACK IN FRONT</div>
+  </div>
+  <div class="round-body">
+    <div class="round-story">MCP re-enters with a refined argument. Not "replace Playwright" — but "use MCP to handle UI change cost efficiently." When UI changes, call MCP once to regenerate. Then run free again. Less manual work than pure Playwright. Cheaper than Vibium at scale.</div>
+    <div class="codeblock">
+<span class="bad">Pure Playwright — UI changes:</span>
+<span class="bad">→ Developer manually hunts broken selectors</span>
+<span class="bad">→ Fixes each one by hand. Human time. Real cost.</span>
+
+<span class="purple">Playwright + MCP — UI changes:</span>
+<span class="purple">→ Call MCP once 🪙 (one regeneration)</span>
+<span class="good">→ Updated code runs 1000 times FREE again ✅</span>
+
+<span class="bad">Vibium — UI changes:</span>
+<span class="good">→ Self heals automatically ✅</span>
+<span class="bad">→ But pays tokens on EVERY run regardless ❌</span>
+
+<span class="gold">MCP sweet spot: pay once per change, run free until next change.</span>
+    </div>
+    <div class="verdict">"Pay once when things change. Run free until the next change. Better cost model than both extremes. The pragmatic choice."</div>
+  </div>
+</div>
+
+
+<!-- ROUND 12 — NEW: LOCAL LLM + JASON'S VISION -->
+<div class="sdiv v"><div class="sdiv-num">12</div><div class="sdiv-label">Round 12 · The Vision Twist</div><div class="sdiv-line"></div></div>
+<div class="round v">
+  <div class="round-header">
+    <div class="round-num">12</div>
+    <div class="round-title">Local LLM. Jason's Vision. Vibium Reclaims The Future.</div>
+    <div class="round-badge">🟢 VIBIUM UPPER HAND</div>
+  </div>
+  <div class="round-body">
+    <div class="round-story">Then someone asks: <em>"Why would Jason Huggins — who built Selenium AND Appium — build something with this many problems?"</em> The answer rewrites everything. And it starts with a piece of hardware already in your pocket.</div>
+    <div class="codeblock">
+<span class="gold">Apple MacBook M4 — today, right now, 2026:</span>
+<span class="good">→ Runs LLaMA 3 locally. No internet. No API. ✅</span>
+<span class="good">→ Runs Mistral locally. Zero cost. ✅</span>
+<span class="good">→ Runs Phi-3 locally. Zero latency. ✅</span>
+
+<span class="dim">Every Vibium problem — solved by local LLM:</span>
+
+<span class="bad">Token cost problem today:</span>
+<span class="good">→ Local LLM = zero tokens, zero cost, zero billing ✅</span>
+
+<span class="bad">Corporate firewall problem today:</span>
+<span class="good">→ Local LLM = no internet call, no firewall issue ✅</span>
+
+<span class="bad">Data privacy problem today:</span>
+<span class="good">→ Local LLM = nothing leaves your machine ✅</span>
+
+<span class="bad">Latency problem today:</span>
+<span class="good">→ Local LLM = runs on your chip, near-instant ✅</span>
+
+<span class="gold">2028: every developer laptop runs LLM locally.</span>
+<span class="good">Every single Vibium disadvantage → gone completely. ✅</span>
+    </div>
+    <div class="codeblock">
+<span class="gold">Jason's track record — he's been told this twice before:</span>
+<span class="good">2004 → Selenium  → "Why automate browsers?"  → Industry standard ✅</span>
+<span class="good">2012 → Appium    → "Mobile too complex"       → Industry standard ✅</span>
+<span class="warn">2025 → Vibium    → "Token cost. Firewall."    → "I've heard this before."</span>
+
+<span class="dim">Token cost trajectory:</span>
+<span class="bad">GPT-4   2023 → $30 per million tokens</span>
+<span class="warn">GPT-4o  2024 → $5  per million tokens</span>
+<span class="good">Haiku   2025 → $0.25 per million tokens</span>
+<span class="good">2027 est     → nearly negligible</span>
+<span class="good">Local LLM    → $0.00 forever ✅</span>
+    </div>
+    <div class="round-story">And one final argument nobody considered. In a vibe-coded world where AI rebuilds UI every day — MCP generated code breaks daily. You regenerate. It breaks. You regenerate. Forever. <strong>Vibium reads the UI fresh every time. It never breaks because it never assumes.</strong> Runtime intelligence is not a weakness in a world of constant change — it is the only viable solution.</div>
+    <div class="codeblock">
+<span class="dim">// In an AI-built world where UI changes daily:</span>
+
+<span class="bad">MCP cycle: generate → break → regenerate → break → regenerate</span>
+<span class="bad">→ await page.click('#submit-btn') → UI rebuilt → gone ❌</span>
+<span class="bad">→ Regenerate. Run. Break. Regenerate. Run. Break. Forever.</span>
+
+<span class="good">Vibium: reads fresh → always finds the right element</span>
+<span class="good">→ await vibe.do("submit the transaction")</span>
+<span class="good">→ UI rebuilt overnight → Vibium reads new UI fresh</span>
+<span class="good">→ Finds button wherever it is. Always. ✅</span>
+    </div>
+    <div class="verdict">"We judged a 2028 solution by 2026 problems. Apple MacBook already runs LLM locally today. Every Vibium disadvantage disappears. Every MCP advantage becomes irrelevant when UI changes daily."</div>
+  </div>
+</div>
+
+
+<!-- ROUND 13 -->
+<div class="sdiv d"><div class="sdiv-num">13</div><div class="sdiv-label">Round 13 · The Human Cost</div><div class="sdiv-line"></div></div>
+<div class="round d">
+  <div class="round-header">
+    <div class="round-num">13</div>
+    <div class="round-title">Testers In Trouble. The Final Twist.</div>
+    <div class="round-badge">😰 EVERYONE AFFECTED</div>
+  </div>
+  <div class="round-body">
+    <div class="round-story">Vibium reclaims the future. But the final question lands harder than any technical argument. <em>"If plain English tests are this easy — why do we need separate testers? Can't developers write these themselves?"</em></div>
+    <div class="codeblock">
+<span class="dim">// What Vibium + developer can do without a tester:</span>
+<span class="good">Writing regression tests     → vibe.do() in 2 minutes ✅</span>
+<span class="good">Running regression           → CI/CD pipeline ✅</span>
+<span class="good">Maintaining test scripts     → Self-healing ✅</span>
+<span class="good">Smoke tests every deployment → Automated ✅</span>
+<span class="good">Retesting after bug fix      → Pipeline reruns ✅</span>
+
+<span class="warn">That is 60-70% of what testers do today.</span>
+<span class="bad">Automated. Gone. Within 5-7 years.</span>
+    </div>
+    <div class="round-story">India has approximately 5 million software testers. If 60-70% of daily tester work is automated — that is 3 to 3.5 million roles affected. Not gradually. <strong>Within 5 to 7 years.</strong> But the 30% who survive are not the script writers. They never were.</div>
+    <div class="codeblock">
+<span class="bad">The 60-70% who fade — they only do:</span>
+<span class="bad">→ Write and maintain test scripts</span>
+<span class="bad">→ Run regression manually</span>
+<span class="bad">→ Fix broken selectors</span>
+
+<span class="good">The 30% who survive — they do what AI cannot:</span>
+<span class="good">→ Think like the USER not the CODE</span>
+<span class="good">→ Find bugs at intersection of features</span>
+<span class="good">→ Validate AI tested the RIGHT things</span>
+<span class="good">→ Satisfy regulators independently</span>
+<span class="good">→ Ask "should it work this way?" not just "does it?"</span>
+    </div>
+    <div class="verdict">"Vibium eliminates the TASK of writing tests. It cannot eliminate the THINKING behind what to test. As long as software serves humans — humans must judge if it is good enough."</div>
+  </div>
+</div>
+
+
+<!-- SCORE TABLE -->
+<div class="sdiv g"><div class="sdiv-num">∑</div><div class="sdiv-label">Full Score Sheet</div><div class="sdiv-line"></div></div>
+<div class="score-wrap">
+  <table>
+    <thead>
+      <tr><th>Round</th><th>Winner</th><th>Why They Won</th><th>What Changed Next</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>01 — First Look</td><td class="tw-v">🟢 VIBIUM</td><td>Plain English, self-healing, no selectors, anyone can write</td><td>Token cost reality check incoming</td></tr>
+      <tr><td>02 — Token Cost</td><td class="tw-p">🔵 PLAYWRIGHT</td><td>$0 forever — Vibium charges on every single step</td><td>Caching discovered — changes equation</td></tr>
+      <tr><td>03 — Caching</td><td class="tw-v">🟢 VIBIUM recovers</td><td>LLM caching makes nth run near-free</td><td>Non-determinism surfaces as deeper problem</td></tr>
+      <tr><td>04 — Non-Determinism</td><td class="tw-m">🟣 MCP rises</td><td>Black box AI unacceptable for compliance and audit</td><td>MCP offers English input with deterministic output</td></tr>
+      <tr><td>05 — MCP Enters</td><td class="tw-m">🟣 MCP</td><td>Plain English experience + trustworthy code output</td><td>Token cost comparison still to come</td></tr>
+      <tr><td>06 — Token Advantage</td><td class="tw-m">🟣 MCP stronger</td><td>Generate once — run 1000 times free. Vibium rents forever.</td><td>Hallucination at handover about to be exposed</td></tr>
+      <tr><td>07 — MCP Hallucination</td><td class="tw-d">🔴 NOBODY wins</td><td>MCP confidently generates selectors that don't exist. Playwright executes blindly. Debugging nightmare.</td><td>Even when correct — selectors still brittle</td></tr>
+      <tr><td>08 — Brittle Code</td><td class="tw-p">🔵 PLAYWRIGHT</td><td>No LLM dependency, no hallucination risk — most reliable</td><td>But Playwright itself has UI change problem</td></tr>
+      <tr><td>09 — Pure Reliability</td><td class="tw-p">🔵 PLAYWRIGHT</td><td>Free, auditable, deterministic, firewall-safe, enterprise-ready</td><td>Fast-moving UI changes coming to expose weakness</td></tr>
+      <tr><td>10 — UI Change Cost</td><td class="tw-m">🟣 MCP</td><td>Regenerate once per change — less manual effort than Playwright</td><td>MCP becomes clear practical winner</td></tr>
+      <tr><td>11 — Sweet Spot</td><td class="tw-m">🟣 MCP</td><td>Pay once per change, run free forever — best cost model today</td><td>Local LLM vision about to reframe everything</td></tr>
+      <tr><td>12 — Local LLM + Vision</td><td class="tw-v">🟢 VIBIUM long-term</td><td>MacBook already runs LLM locally. Every Vibium problem disappears. Runtime intelligence wins in AI-built world.</td><td>Human consequence hits everyone hard</td></tr>
+      <tr><td>13 — Human Cost</td><td class="tw-all">😰 EVERYONE affected</td><td>60-70% of tester work automated — only strategic thinkers survive</td><td>Are you in the 30% or the 70%?</td></tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- FINAL STORY -->
+<div class="final-story">
+  <h2>The Story In One Paragraph</h2>
+  <p>
+    <strong>Vibium walks in looking unbeatable</strong> — plain English, self-healing, zero code —
+    until token cost exposes its hidden running expense.
+    <strong>Caching saves it partially</strong> — until non-determinism destroys trust and compliance becomes impossible.
+    <strong>MCP rises as the perfect middle ground</strong> — English experience with deterministic output and token advantage —
+    until hallucination at the MCP-to-Playwright handover exposes a blind spot nobody warned about,
+    and brittle generated selectors prove the pain just moved, not disappeared.
+    <strong>Playwright stands quietly as the reliable veteran</strong> — free, auditable, no hallucination —
+    until constant AI-driven UI changes expose its maintenance treadmill.
+    <strong>MCP returns as the pragmatic sweet spot</strong> — pay once per UI change, run free forever.
+    Until <strong>the Apple MacBook M4 running LLM locally today reveals we judged a 2028 solution by 2026 problems</strong> —
+    local LLM eliminates every Vibium disadvantage completely, and in a world where AI rebuilds UI daily,
+    runtime intelligence is the only answer that never breaks.
+    <strong>Vibium reclaims the future — but takes 60-70% of testers with it.</strong>
+  </p>
+</div>
+
+
+<!-- CLOSING -->
+<div class="closing">
+  <h2>No Clear Winner.<br>Every Tool Has Its Moment.</h2>
+  <p>The engineer who understands all 13 rounds — every twist, every counter, every comeback — is more valuable than any tool in any round.</p>
+  <div class="closing-pills">
+    <div class="cpill s">Selenium · Legacy Stability</div>
+    <div class="cpill p">Playwright · Enterprise Trust</div>
+    <div class="cpill m">MCP · Pragmatic Sweet Spot</div>
+    <div class="cpill v">Vibium · The 2028 Future</div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>
